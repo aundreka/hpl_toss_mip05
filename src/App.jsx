@@ -1,40 +1,156 @@
-import { Cta } from "./components/Cta";
-import { Header } from "./components/Header";
-import useScaleUI from "./hooks/useScaleUI";
+const rings = [
+  { src: "/ui/ring1.svg", size: 118.5 },
+  { src: "/ui/ring2.svg", size: 258.5 },
+  { src: "/ui/ring3.svg", size: 398.5 },
+  { src: "/ui/ring4.svg", size: 598.5 },
+];
 
 function App() {
-  const { appRef, wrapperRef } = useScaleUI(420, 820);
-
   return (
     <>
-      <div ref={wrapperRef} className="app-wrapper">
-        <div ref={appRef} className="app">
-          {/* Start customizing here. */}
-          {/* Please note that this template only applies to none-scrollable projects */}
+      <style>{`
+        :root {
+          font-family: Inter, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+          color: #202632;
+          background: #EAECEF;
+        }
 
-          <Header className="landscape:hidden" />
+        * {
+          box-sizing: border-box;
+        }
 
-          <main className="container mx-auto flex flex-col items-center p-4">
-            <div className="w-full flex flex-col items-center">
-              <div className="main-box w-full landscape:w-200 landscape:flex landscape:flex-row landscape:justify-center landscape:gap-4 landscape:items-center landscape:h-190">
-                <div className="left-box landscape:basis-2/3">
-                  <div className="p-10 bg-green-900 w-full mt-4"></div>
-                  <div className="p-10 bg-green-800 w-full mt-4"></div>
-                  <div className="p-10 bg-green-700 w-full mt-4"></div>
-                </div>
-                <div className="right-box portrait:hidden landscape:basis-1/3 flex flex-col items-center">
-                  <Header />
-                  <Cta />
-                </div>
-              </div>
-            </div>
-          </main>
+        body {
+          margin: 0;
+          background: #EAECEF;
+        }
 
-          <Cta className="landscape:hidden" />
+        #root {
+          min-height: 100vh;
+        }
 
-          {/* End customizing here */}
-        </div>
-      </div>
+        .app {
+          min-height: 100svh;
+          background: #EAECEF;
+          overflow: hidden;
+        }
+
+        .hero {
+          position: relative;
+          min-height: 100svh;
+          display: flex;
+          flex-direction: column;
+          align-items: center;
+          padding: 24px 20px 48px;
+        }
+
+        .logo {
+          width: min(234px, 46vw);
+          height: auto;
+          margin-top: 8px;
+          position: relative;
+          z-index: 3;
+        }
+
+        .header {
+          width: min(420px, 90vw);
+          height: auto;
+          margin-top: 18px;
+          position: relative;
+          z-index: 3;
+        }
+
+        .points {
+          width: min(330px, 72vw);
+          height: auto;
+          margin-top: 18px;
+          position: relative;
+          z-index: 3;
+        }
+
+        .rings-stage {
+          position: relative;
+          width: min(680px, 165vw);
+          aspect-ratio: 1;
+          margin-top: -12px;
+          flex: 1;
+          min-height: 520px;
+          display: flex;
+          align-items: flex-start;
+          justify-content: center;
+        }
+
+        .ring {
+          position: absolute;
+          top: 0;
+          left: 50%;
+          transform: translateX(-50%);
+          height: auto;
+          pointer-events: none;
+        }
+
+        .cta {
+          position: absolute;
+          left: 50%;
+          bottom: max(24px, 4svh);
+          transform: translateX(-50%);
+          width: min(280px, 72vw);
+          height: auto;
+          z-index: 2;
+        }
+
+        @media (max-width: 480px) {
+          .hero {
+            padding-left: 16px;
+            padding-right: 16px;
+          }
+
+          .header {
+            width: min(360px, 88vw);
+          }
+
+          .points {
+            width: min(320px, 78vw);
+          }
+
+          .rings-stage {
+            width: 165vw;
+            min-height: 470px;
+          }
+
+          .cta {
+            width: min(250px, 68vw);
+          }
+        }
+      `}</style>
+
+      <main className="app">
+        <section className="hero">
+          <img className="logo" src="/ui/logo.svg" alt="Toss" />
+          <img
+            className="header"
+            src="/ui/header.svg"
+            alt="Receive points whenever Toss users appear nearby"
+          />
+          <img className="points" src="/ui/points.svg" alt="You got 0.4 cent" />
+
+          <div className="rings-stage" aria-hidden="true">
+            {rings.map((ring, index) => (
+              <img
+                key={ring.src}
+                className="ring"
+                src={ring.src}
+                alt=""
+                style={{
+                  width: `min(${ring.size}px, ${28 + index * 34}vw)`,
+                  zIndex: index,
+                }}
+              />
+            ))}
+
+            <img className="cta" src="/ui/cta.svg" alt="Download Toss" />
+          </div>
+        </section>
+      </main>
     </>
   );
 }

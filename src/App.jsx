@@ -2,11 +2,25 @@ import { useEffect, useRef, useState } from "react";
 import "./App.css";
 
 const rings = [
-  { src: "/ui/rings/ring1.svg", size: 118.5 },
-  { src: "/ui/rings/ring2.svg", size: 258.5 },
-  { src: "/ui/rings/ring3.svg", size: 398.5 },
-  { src: "/ui/rings/ring4.svg", size: 598.5 },
+  { src: "/ui/rings/ring1.svg" },
+  { src: "/ui/rings/ring2.svg" },
+  { src: "/ui/rings/ring3.svg" },
+  { src: "/ui/rings/ring4.svg" },
 ];
+
+const DEFAULT_RING4_SIZE = 598.5;
+const INNER_RING_RATIO = 118.5 / DEFAULT_RING4_SIZE;
+
+const getRingSize = (index, ring4Size) => {
+  if (rings.length === 1) {
+    return ring4Size;
+  }
+
+  const progress = index / (rings.length - 1);
+  const ratio = INNER_RING_RATIO + (1 - INNER_RING_RATIO) * progress;
+
+  return ratio * ring4Size;
+};
 
 function App() {
   const heroRef = useRef(null);
@@ -15,7 +29,7 @@ function App() {
   const ctaRef = useRef(null);
   const [ringLayout, setRingLayout] = useState({
     centerY: 180,
-    ring4Size: rings[rings.length - 1].size,
+    ring4Size: DEFAULT_RING4_SIZE,
   });
 
   useEffect(() => {
@@ -94,7 +108,7 @@ function App() {
                 alt=""
                 style={{
                   top: `${ringLayout.centerY}px`,
-                  width: `${(ring.size / rings[rings.length - 1].size) * ringLayout.ring4Size}px`,
+                  width: `${getRingSize(index, ringLayout.ring4Size)}px`,
                   zIndex: index,
                 }}
               />

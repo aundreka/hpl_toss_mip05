@@ -102,6 +102,7 @@ function App() {
   };
 
   const playClickSound = useSound(soundAssets.click, 0.6, duckBackgroundAudio);
+  const playCtaClickSound = useSound(soundAssets.click2, 0.6, duckBackgroundAudio);
   const playWinSound = useSound(soundAssets.win, 0.75, duckBackgroundAudio);
 
   useEffect(() => {
@@ -304,7 +305,7 @@ function App() {
     setShowTotalEarnings(false);
   };
 
-  const handleClickAction = useCallback(() => {
+  const openClickDestination = useCallback(() => {
     const mraid = window.mraid || {};
     if (mraid.open && typeof mraid.open === "function") {
       if (clickUrl) mraid.open(clickUrl);
@@ -315,6 +316,11 @@ function App() {
     if (clickUrl) window.open(clickUrl, "_blank", "noopener,noreferrer");
     else window.open();
   }, [clickUrl]);
+
+  const handleMainCtaClick = useCallback(() => {
+    playCtaClickSound();
+    openClickDestination();
+  }, [openClickDestination, playCtaClickSound]);
 
   const handleCharacterClick = () => {
     if (currentCharacterIndex === null) {
@@ -361,11 +367,14 @@ function App() {
   const visibleCharacterCount =
     currentCharacterIndex === null ? characterAssets.length : currentCharacterIndex + 1;
   const visibleCharacters = characterAssets.slice(0, visibleCharacterCount);
+  const activePointSrc = activePointIndex === null ? null : pointAssets[activePointIndex];
+  const activePointAlt =
+    activePointIndex === null ? "" : `Points reward ${activePointIndex + 1}`;
 
   return (
     <>
       {showEndcard ? (
-        <Endcard onCtaClick={handleClickAction} onSoundPlay={duckBackgroundAudio} />
+        <Endcard onCtaClick={openClickDestination} onSoundPlay={duckBackgroundAudio} />
       ) : (
         <main className="app">
           <section className="hero" ref={heroRef}>
@@ -376,15 +385,15 @@ function App() {
               alt="Receive points whenever Toss users appear nearby"
             />
             <div className="points-anchor" ref={pointsRef} aria-live="polite">
-              {pointAssets.map((src, index) => (
+              {activePointSrc ? (
                 <img
-                  key={src}
-                  className={`points-popup${activePointIndex === index ? " is-visible" : ""}`}
-                  src={src}
-                  alt={activePointIndex === index ? `Points reward ${index + 1}` : ""}
-                  aria-hidden={activePointIndex === index ? "false" : "true"}
+                  key={activePointSrc}
+                  className="points-popup is-visible"
+                  src={activePointSrc}
+                  alt={activePointAlt}
+                  aria-hidden="false"
                 />
-              ))}
+              ) : null}
             </div>
 
             <div className="rings-stage" ref={stageRef}>
@@ -477,7 +486,7 @@ function App() {
                 className="cta-button"
                 ref={ctaRef}
                 type="button"
-                onClick={handleClickAction}
+                onClick={handleMainCtaClick}
                 aria-label="Download Toss"
               >
                 <img className="cta" src={imageAssets.cta} alt="" aria-hidden="true" />

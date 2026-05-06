@@ -9,18 +9,29 @@
 }
 
 .phone-shell {
+  --phone-scale: clamp(0.58, 0.46 + 0.32vw, 0.74);
   display: flex;
   align-items: center;
   justify-content: center;
+  width: min(100%, calc(340px * var(--phone-scale)));
+  zoom: var(--phone-scale);
 }
 
 .phone-frame {
   width: 340px;
+  max-width: 100%;
   background: #d9d7d7;
   border-radius: 23px;
   padding: 9px;
   box-shadow: 0 10px 4px rgba(0, 0, 0, 0.07);
-  zoom: 0.73;
+}
+
+@supports not (zoom: 1) {
+  .phone-shell {
+    width: min(100%, 340px);
+    transform: scale(var(--phone-scale));
+    transform-origin: center top;
+  }
 }
 
 .phone-screen {

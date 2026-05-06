@@ -1,3 +1,6 @@
+import { useEffect, useRef, useState } from "react";
+import "./App.css";
+
 const rings = [
   { src: "/ui/rings/ring1.svg", size: 118.5 },
   { src: "/ui/rings/ring2.svg", size: 258.5 },
@@ -6,134 +9,83 @@ const rings = [
 ];
 
 function App() {
+  const heroRef = useRef(null);
+  const stageRef = useRef(null);
+  const pointsRef = useRef(null);
+  const ctaRef = useRef(null);
+  const [ringLayout, setRingLayout] = useState({
+    centerY: 180,
+    ring4Size: rings[rings.length - 1].size,
+  });
+
+  useEffect(() => {
+    const updateRingLayout = () => {
+      const hero = heroRef.current;
+      const stage = stageRef.current;
+      const points = pointsRef.current;
+      const cta = ctaRef.current;
+
+      if (!hero || !stage || !points || !cta) {
+        return;
+      }
+
+      const heroRect = hero.getBoundingClientRect();
+      const stageRect = stage.getBoundingClientRect();
+      const pointsRect = points.getBoundingClientRect();
+      const ctaRect = cta.getBoundingClientRect();
+      const pointsCenterY = pointsRect.top - heroRect.top + pointsRect.height / 2;
+      const ctaCenterY = ctaRect.top - heroRect.top + ctaRect.height / 2;
+      const ring4Size = Math.max(ctaCenterY - pointsCenterY, 0);
+      const centerY = (pointsCenterY + ctaCenterY) / 2 - (stageRect.top - heroRect.top);
+
+      setRingLayout((current) => {
+        if (
+          Math.abs(current.centerY - centerY) < 0.5 &&
+          Math.abs(current.ring4Size - ring4Size) < 0.5
+        ) {
+          return current;
+        }
+
+        return { centerY, ring4Size };
+      });
+    };
+
+    const resizeObserver = new ResizeObserver(() => {
+      requestAnimationFrame(updateRingLayout);
+    });
+
+    if (heroRef.current) resizeObserver.observe(heroRef.current);
+    if (stageRef.current) resizeObserver.observe(stageRef.current);
+    if (pointsRef.current) resizeObserver.observe(pointsRef.current);
+    if (ctaRef.current) resizeObserver.observe(ctaRef.current);
+
+    window.addEventListener("resize", updateRingLayout);
+    requestAnimationFrame(updateRingLayout);
+
+    return () => {
+      resizeObserver.disconnect();
+      window.removeEventListener("resize", updateRingLayout);
+    };
+  }, []);
+
   return (
     <>
-      <style>{`
-        :root {
-          font-family: Inter, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
-          color: #202632;
-          background: #EAECEF;
-        }
-
-        * {
-          box-sizing: border-box;
-        }
-
-        body {
-          margin: 0;
-          background: #EAECEF;
-        }
-
-        #root {
-          min-height: 100vh;
-        }
-
-        .app {
-          min-height: 100svh;
-          background: #EAECEF;
-          overflow: hidden;
-        }
-
-        .hero {
-          position: relative;
-          min-height: 100svh;
-          display: flex;
-          flex-direction: column;
-          align-items: center;
-          padding: 24px 20px 48px;
-        }
-
-        .logo {
-          width: min(234px, 46vw);
-          height: auto;
-          margin-top: 8px;
-          position: relative;
-          z-index: 3;
-        }
-
-        .header {
-          width: min(420px, 90vw);
-          height: auto;
-          margin-top: 18px;
-          position: relative;
-          z-index: 3;
-        }
-
-        .points {
-          width: min(330px, 72vw);
-          height: auto;
-          margin-top: 18px;
-          position: relative;
-          z-index: 3;
-        }
-
-        .rings-stage {
-          position: relative;
-          width: min(680px, 165vw);
-          aspect-ratio: 1;
-          margin-top: -12px;
-          flex: 1;
-          min-height: 520px;
-          display: flex;
-          align-items: flex-start;
-          justify-content: center;
-        }
-
-        .ring {
-          position: absolute;
-          top: 50%;
-          left: 50%;
-          transform: translate(-50%, -50%);
-          height: auto;
-          pointer-events: none;
-        }
-
-        .cta {
-          position: absolute;
-          left: 50%;
-          bottom: max(24px, 4svh);
-          transform: translateX(-50%);
-          width: min(280px, 72vw);
-          height: auto;
-          z-index: 2;
-        }
-
-        @media (max-width: 480px) {
-          .hero {
-            padding-left: 16px;
-            padding-right: 16px;
-          }
-
-          .header {
-            width: min(360px, 88vw);
-          }
-
-          .points {
-            width: min(320px, 78vw);
-          }
-
-          .rings-stage {
-            width: 165vw;
-            min-height: 470px;
-          }
-
-          .cta {
-            width: min(250px, 68vw);
-          }
-        }
-      `}</style>
-
       <main className="app">
-        <section className="hero">
+        <section className="hero" ref={heroRef}>
           <img className="logo" src="/ui/logo.svg" alt="Toss" />
           <img
             className="header"
             src="/ui/header.svg"
             alt="Receive points whenever Toss users appear nearby"
           />
-          <img className="points" src="/ui/points.svg" alt="You got 0.4 cent" />
+          <img
+            className="points"
+            ref={pointsRef}
+            src="/ui/points.svg"
+            alt="You got 0.4 cent"
+          />
 
-          <div className="rings-stage" aria-hidden="true">
+          <div className="rings-stage" ref={stageRef} aria-hidden="true">
             {rings.map((ring, index) => (
               <img
                 key={ring.src}
@@ -141,13 +93,14 @@ function App() {
                 src={ring.src}
                 alt=""
                 style={{
-                  width: `min(${ring.size}px, ${28 + index * 34}vw)`,
+                  top: `${ringLayout.centerY}px`,
+                  width: `${(ring.size / rings[rings.length - 1].size) * ringLayout.ring4Size}px`,
                   zIndex: index,
                 }}
               />
             ))}
 
-            <img className="cta" src="/ui/cta.svg" alt="Download Toss" />
+            <img className="cta" ref={ctaRef} src="/ui/cta.svg" alt="Download Toss" />
           </div>
         </section>
       </main>

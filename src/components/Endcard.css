@@ -1,0 +1,97 @@
+
+.endcard {
+    height: 100%;
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  padding: 32px 16px 0;
+  background-color: white;
+  border-radius: 16px
+}
+
+.endcard__logo {
+  width: min(130px, 60vw);
+  height: auto;
+  display: block;
+  margin-bottom: 32px;
+  transform: translateX(-8px);
+}
+
+.endcard__phone {
+  width: 100%;
+  display: flex;
+  justify-content: center;
+  transform: translateX(80px) rotate(-7deg);
+  transform-origin: center bottom;
+  opacity: 0;
+  animation: endcard-phone-in 0.75s cubic-bezier(.22, 1, .36, 1) 0.12s forwards;
+}
+
+.endcard__cta-button {
+  bottom: 90px;
+  position: absolute;
+  left: 50%;
+  width: min(180px, 78vw);
+  padding: 0;
+  border: 0;
+  background: transparent;
+  transform: translateX(-50%);
+  cursor: pointer;
+  -webkit-tap-highlight-color: transparent;
+  transform-origin: center;
+  animation: cta-pulse 1.8s ease-in-out infinite;
+}
+
+.endcard__cta-button:focus-visible {
+  outline: none;
+}
+
+.endcard__cta {
+  width: 100%;
+  height: auto;
+  display: block;
+}
+
+.endcard__footer {
+  width: min(420px, 100%);
+  height: auto;
+  display: block;
+  bottom: 10px;
+  position: absolute;
+}
+
+@keyframes cta-pulse {
+  0%,
+  100% {
+    transform: translateX(-50%) scale(1);
+  }
+
+  50% {
+    transform: translateX(-50%) scale(1.05);
+  }
+}
+
+@keyframes endcard-phone-in {
+  0% {
+    transform: translateX(88px) rotate(-7deg);
+    opacity: 0;
+  }
+
+  100% {
+    transform: translateX(16px) rotate(-3deg);
+    opacity: 1;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .endcard__phone {
+    animation: none;
+    opacity: 1;
+    transform: rotate(-3deg);
+  }
+
+  .endcard__cta-button {
+    animation: none;
+  }
+}

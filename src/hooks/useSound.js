@@ -1,7 +1,12 @@
-import { useEffect, useRef } from "react";
+import { useCallback, useEffect, useRef } from "react";
 
-export const useSound = (src, volume = 0.7) => {
+export const useSound = (src, volume = 0.7, onPlay) => {
   const audioRef = useRef(null);
+  const onPlayRef = useRef(onPlay);
+
+  useEffect(() => {
+    onPlayRef.current = onPlay;
+  }, [onPlay]);
 
   useEffect(() => {
     const audio = new Audio(src);
@@ -14,11 +19,12 @@ export const useSound = (src, volume = 0.7) => {
     };
   }, [src, volume]);
 
-  const play = () => {
+  const play = useCallback(() => {
     if (!audioRef.current) return;
+    onPlayRef.current?.();
     audioRef.current.currentTime = 0;
     audioRef.current.play().catch(() => {});
-  };
+  }, []);
 
   return play;
 };

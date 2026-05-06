@@ -1,0 +1,34 @@
+@import "tailwindcss";
+
+@theme {
+  --animate-pulsing: pulsing 1s infinite;
+  
+  @keyframes pulsing {
+    0% {
+      transform: scale(1);
+    }
+
+    50% {
+      transform: scale(1.1);
+    }
+
+    100% {
+      transform: scale(1);
+    }
+  }
+}
+
+.app-wrapper {
+  position: relative;
+  width: 100vw;
+  height: 100vh;
+  overflow: hidden;
+}
+
+.app {
+  position: absolute;
+  width: 420px;
+  height: 820px;
+  transform-origin: top left;
+  will-change: transform;
+}

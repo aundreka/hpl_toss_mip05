@@ -1,8 +1,8 @@
 const rings = [
-  { src: "/ui/ring1.svg", size: 118.5 },
-  { src: "/ui/ring2.svg", size: 258.5 },
-  { src: "/ui/ring3.svg", size: 398.5 },
-  { src: "/ui/ring4.svg", size: 598.5 },
+  { src: "/ui/rings/ring1.svg", size: 118.5 },
+  { src: "/ui/rings/ring2.svg", size: 258.5 },
+  { src: "/ui/rings/ring3.svg", size: 398.5 },
+  { src: "/ui/rings/ring4.svg", size: 598.5 },
 ];
 
 function App() {
